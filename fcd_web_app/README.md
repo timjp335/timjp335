@@ -116,9 +116,11 @@ The input CSV file must be semicolon-separated (`;`) and contain the following c
 
 Results are automatically filtered for:
 - **Weekdays**: Tuesday, Wednesday, Thursday only
-- **Holidays**: German holidays for 2021 (configurable in code)
-- **School breaks**: German school breaks for 2021 (configurable in code)
+- **Holidays**: German holidays for 2021 (hardcoded in `analysis.py`, can be modified for other years)
+- **School breaks**: German school breaks for 2021 (hardcoded in `analysis.py`, can be modified for other years)
 - **Distance**: Segments exceeding the configured maximum distance
+
+**Note:** The holiday and school break dates are currently hardcoded for 2021. To analyze data from other years, modify the `ferien_2021` and `feiertage_2021` lists in the `apply_filters()` function in `analysis.py`.
 
 ### Time Periods
 
@@ -174,10 +176,16 @@ For production use, consider:
 5. **Enable HTTPS** for secure communication
 
 6. **Adjust Flask configuration**:
+   ```bash
+   # Set secret key via environment variable
+   export FLASK_SECRET_KEY='your-secure-secret-key-here'
+   ```
    ```python
-   app.config['SECRET_KEY'] = 'your-secure-secret-key'
+   # In production, set debug to False
    app.debug = False
    ```
+
+7. **Update holiday dates** in `analysis.py` for the year(s) of your data
 
 ## Troubleshooting
 

@@ -13,7 +13,8 @@ import pandas as pd
 import analysis
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+# Use environment variable for production, or generate one for development
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100 MB max upload
 app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
 
