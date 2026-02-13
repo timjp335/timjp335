@@ -256,4 +256,4 @@ if __name__ == '__main__':
     # Use debug mode only in development
     # For production, use a WSGI server like Gunicorn instead
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
+    app.run(debug=debug_mode, host='0.0.0.0', port=5500)
