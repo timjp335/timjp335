@@ -183,6 +183,16 @@
             <div class="plots-section">
                 <h2>Visualizations</h2>
 
+                {% if plots.trajectory_plot %}
+                <div class="plot-container">
+                    <div class="plot-title">Trajectory Paths Overview</div>
+                    <img src="data:image/png;base64,{{ plots.trajectory_plot }}" alt="Trajectory Paths">
+                    <p style="text-align: center; color: #6c757d; margin-top: 10px; font-size: 0.9em;">
+                        Blue lines show all trajectories. Red lines highlight trajectories that crossed both measurement lines.
+                    </p>
+                </div>
+                {% endif %}
+
                 {% if plots.distance_distribution %}
                 <div class="plot-container">
                     <div class="plot-title">Distance Distribution</div>
