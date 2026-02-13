@@ -9,6 +9,9 @@ import tempfile
 from pathlib import Path
 from shapely.geometry import shape
 import pandas as pd
+import webbrowser
+import threading
+import time
 
 import analysis
 
@@ -257,8 +260,20 @@ def reset():
     return redirect(url_for('index'))
 
 
+def open_browser():
+    """Open the default web browser to the application URL after a short delay."""
+    time.sleep(1.5)  # Wait for Flask to start
+    webbrowser.open('http://localhost:5500')
+
+
 if __name__ == '__main__':
     # Use debug mode only in development
     # For production, use a WSGI server like Gunicorn instead
     debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    
+    # Open browser in a separate thread
+    threading.Thread(target=open_browser, daemon=True).start()
+    
+    print("Starting Flask server...")
+    print("Opening browser at http://localhost:5500")
     app.run(debug=debug_mode, host='0.0.0.0', port=5500)

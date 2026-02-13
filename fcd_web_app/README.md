@@ -63,10 +63,10 @@ python app.py
 python app.py
 ```
 
-2. Open your web browser and navigate to:
-   ```
-   http://localhost:5000
-   ```
+**Note:** The application will automatically open in your default web browser when started. If the browser doesn't open automatically, you can manually navigate to:
+```
+http://localhost:5500
+```
 
 ### Workflow
 
