@@ -24,8 +24,10 @@ This web application converts the functionality of the `travel_time_from_fcd_Ver
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.9 or higher (tested with Python 3.9-3.12)
 - pip (Python package manager)
+
+**Note:** For best compatibility, Python 3.10 or 3.11 is recommended. If you encounter installation issues, see the Troubleshooting section below.
 
 ### Setup
 
@@ -34,8 +36,15 @@ This web application converts the functionality of the `travel_time_from_fcd_Ver
    cd fcd_web_app
    ```
 
-2. Install required dependencies:
+2. (Optional) Create a virtual environment:
    ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install required dependencies:
+   ```bash
+   pip install --upgrade pip setuptools wheel
    pip install -r requirements.txt
    ```
 
@@ -195,12 +204,73 @@ For production use, consider:
 
 ## Troubleshooting
 
-### Common Issues
+### Installation Issues
+
+#### "subprocess-exited-with-error" or build failures
+
+If you encounter errors during `pip install -r requirements.txt`:
+
+1. **Update pip, setuptools, and wheel first**:
+   ```bash
+   pip install --upgrade pip setuptools wheel
+   ```
+
+2. **Use a virtual environment** (recommended):
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install --upgrade pip setuptools wheel
+   pip install -r requirements.txt
+   ```
+
+3. **Check Python version**:
+   ```bash
+   python3 --version  # Should be 3.9 or higher
+   ```
+   If you're using Python 3.13+, some packages may not have pre-built wheels yet. Use Python 3.10-3.12 for best compatibility.
+
+4. **Install system dependencies** (Linux/macOS):
+   Some geospatial packages may require system libraries:
+   ```bash
+   # Ubuntu/Debian
+   sudo apt-get install -y python3-dev build-essential libgeos-dev libproj-dev
+
+   # macOS (with Homebrew)
+   brew install geos proj
+   ```
+
+5. **Install packages individually** to identify the problematic package:
+   ```bash
+   pip install flask
+   pip install pandas
+   pip install numpy
+   pip install shapely
+   pip install pyproj
+   pip install matplotlib
+   pip install seaborn
+   ```
+
+6. **Use conda as an alternative** (if pip continues to fail):
+   ```bash
+   conda create -n fcd_app python=3.11
+   conda activate fcd_app
+   conda install -c conda-forge flask pandas numpy shapely pyproj matplotlib seaborn
+   ```
+
+### Common Runtime Issues
 
 1. **Import errors**: Ensure all dependencies are installed: `pip install -r requirements.txt`
 2. **Port already in use**: Change the port in `app.py` or stop the conflicting process
 3. **Large file uploads fail**: Adjust `MAX_CONTENT_LENGTH` in `app.py`
 4. **Memory issues**: For very large datasets, consider processing in chunks or increasing available memory
+
+### Getting Help
+
+If you continue to experience issues:
+1. Check the Python version: `python3 --version`
+2. Check the pip version: `pip --version`
+3. Try creating a fresh virtual environment
+4. Check the full error message for specific package names
 
 ## Original Notebook
 
