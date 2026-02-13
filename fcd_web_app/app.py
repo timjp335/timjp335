@@ -180,8 +180,13 @@ def results():
         # Load results
         crossings_df = pd.read_pickle(session['results_path'])
         
+        # Load trajectory points if available
+        traj_points = None
+        if 'traj_points_path' in session and os.path.exists(session['traj_points_path']):
+            traj_points = pd.read_pickle(session['traj_points_path'])
+        
         # Generate plots
-        plots = analysis.generate_plots(crossings_df)
+        plots = analysis.generate_plots(crossings_df, traj_points)
         
         # Get statistics
         stats = analysis.get_statistics(crossings_df)

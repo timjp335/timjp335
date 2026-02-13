@@ -610,12 +610,68 @@ def fig_to_base64():
     return img_base64
 
 
-def generate_plots(crossings_df_filtered):
+def generate_trajectory_plot(traj_points, crossings_df_filtered):
+    """Generate trajectory plot showing all trajectories with crossings highlighted."""
+    if traj_points.empty:
+        return None
+    
+    max_traj_to_plot = None
+    alpha_per_traj = 0.08 if max_traj_to_plot is None else min(0.6, 8 / max_traj_to_plot)
+    grouped = list(traj_points.groupby('traj_id', sort=False))
+    if max_traj_to_plot is not None:
+        grouped = grouped[:max_traj_to_plot]
+    
+    crossing_ids = set(crossings_df_filtered['Trajectory ID']) if not crossings_df_filtered.empty else set()
+    
+    fig, ax = plt.subplots(figsize=(10, 8))
+    
+    # Plot all trajectories in blue
+    for traj_id, group in grouped:
+        coords = group[['lon','lat']].dropna()
+        if coords.shape[0] < 2:
+            continue
+        ax.plot(coords['lon'].values, coords['lat'].values, linewidth=0.7, alpha=alpha_per_traj, color='tab:blue')
+    
+    # Highlight crossing trajectories in red
+    if crossing_ids:
+        for traj_id, group in grouped:
+            if traj_id not in crossing_ids:
+                continue
+            coords = group[['lon','lat']].dropna()
+            if coords.shape[0] < 2:
+                continue
+            ax.plot(coords['lon'].values, coords['lat'].values, linewidth=0.7, alpha=alpha_per_traj, color='crimson')
+    
+    ax.set_title('Trajectory Paths (Crossing Trajectories in Red)')
+    ax.set_xlabel('Longitude (°)')
+    ax.set_ylabel('Latitude (°)')
+    ax.set_aspect('equal', adjustable='datalim')
+    ax.grid(True, linestyle='--', linewidth=0.5, alpha=0.4)
+    
+    valid_extent = traj_points[['lon','lat']].dropna()
+    if not valid_extent.empty:
+        min_lon, max_lon = valid_extent['lon'].min(), valid_extent['lon'].max()
+        min_lat, max_lat = valid_extent['lat'].min(), valid_extent['lat'].max()
+        pad = max(max_lon - min_lon, max_lat - min_lat) * 0.02
+        ax.set_xlim(min_lon - pad, max_lon + pad)
+        ax.set_ylim(min_lat - pad, max_lat + pad)
+    
+    plt.tight_layout()
+    return fig_to_base64()
+
+
+def generate_plots(crossings_df_filtered, traj_points=None):
     """Generate all analysis plots."""
     plots = {}
     
     if crossings_df_filtered.empty:
         return plots
+    
+    # 0. Trajectory plot (if traj_points provided)
+    if traj_points is not None and not traj_points.empty:
+        trajectory_plot = generate_trajectory_plot(traj_points, crossings_df_filtered)
+        if trajectory_plot:
+            plots['trajectory_plot'] = trajectory_plot
     
     # 1. Distance distribution
     if 'Distance Between Lines (m)' in crossings_df_filtered.columns:
