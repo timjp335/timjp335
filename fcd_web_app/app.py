@@ -244,7 +244,7 @@ def reset():
             if os.path.exists(path):
                 try:
                     os.remove(path)
-                except:
+                except OSError:
                     pass
     
     session.clear()

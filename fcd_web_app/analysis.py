@@ -565,7 +565,7 @@ def apply_filters(crossings_df, distance_cut_m=700):
         pd.date_range("2021-12-23", "2022-01-07"),
     ]
     ferien_dates = pd.DatetimeIndex(
-        np.concatenate([fr.values if hasattr(fr, "values") else np.array([fr.value]) for fr in ferien_2021])
+        np.concatenate([fr.values if hasattr(fr, "values") else np.array([fr]) for fr in ferien_2021])
     ).tz_localize("UTC").tz_convert(None).date
     
     feiertage_2021 = pd.to_datetime([
