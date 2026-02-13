@@ -43,10 +43,16 @@ This web application converts the functionality of the `travel_time_from_fcd_Ver
 
 ### Starting the Application
 
-1. Start the Flask development server:
-   ```bash
-   python app.py
-   ```
+**Development Mode** (with debug enabled):
+```bash
+export FLASK_DEBUG=true
+python app.py
+```
+
+**Production Mode** (debug disabled, recommended):
+```bash
+python app.py
+```
 
 2. Open your web browser and navigate to:
    ```
