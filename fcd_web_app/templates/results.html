@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCD Analysis - Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .results-summary {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-card h3 {
+            margin-top: 0;
+            color: #495057;
+            font-size: 1.2em;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        .stat-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+        .stat-value {
+            font-weight: 600;
+            color: #212529;
+        }
+        .plots-section {
+            margin: 30px 0;
+        }
+        .plot-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .plot-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .plot-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Analysis Results</h1>
+            <p>Travel time analysis for FCD trajectory segments</p>
+        </header>
+
+        <main>
+            <div class="results-summary">
+                <h2>Summary</h2>
+                <p><strong>Total valid segments analyzed:</strong> {{ num_segments }}</p>
+                <p>Results filtered for Tuesday-Thursday, excluding holidays and breaks.</p>
+            </div>
+
+            {% if stats %}
+            <div class="stats-grid">
+                {% if stats.travel_time %}
+                <div class="stat-card">
+                    <h3>Travel Time Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Count:</span>
+                        <span class="stat-value">{{ stats.travel_time.count }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mean:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.travel_time.mean) }} s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Median:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.travel_time.median) }} s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Std Dev:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.travel_time.std) }} s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Min:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.travel_time.min) }} s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Max:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.travel_time.max) }} s</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if stats.distance %}
+                <div class="stat-card">
+                    <h3>Distance Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Count:</span>
+                        <span class="stat-value">{{ stats.distance.count }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mean:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.distance.mean) }} m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Median:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.distance.median) }} m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Std Dev:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.distance.std) }} m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Min:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.distance.min) }} m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Max:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.distance.max) }} m</span>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if stats.avg_speed %}
+                <div class="stat-card">
+                    <h3>Average Speed Statistics</h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Count:</span>
+                        <span class="stat-value">{{ stats.avg_speed.count }}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Mean:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.avg_speed.mean) }} km/h</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Median:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.avg_speed.median) }} km/h</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Std Dev:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.avg_speed.std) }} km/h</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Min:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.avg_speed.min) }} km/h</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Max:</span>
+                        <span class="stat-value">{{ "%.2f"|format(stats.avg_speed.max) }} km/h</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="plots-section">
+                <h2>Visualizations</h2>
+
+                {% if plots.distance_distribution %}
+                <div class="plot-container">
+                    <div class="plot-title">Distance Distribution</div>
+                    <img src="data:image/png;base64,{{ plots.distance_distribution }}" alt="Distance Distribution">
+                </div>
+                {% endif %}
+
+                {% if plots.traveltime_distribution %}
+                <div class="plot-container">
+                    <div class="plot-title">Travel Time Distribution</div>
+                    <img src="data:image/png;base64,{{ plots.traveltime_distribution }}" alt="Travel Time Distribution">
+                </div>
+                {% endif %}
+
+                {% if plots.traveltime_by_timeofday %}
+                <div class="plot-container">
+                    <div class="plot-title">Travel Time by Time of Day</div>
+                    <img src="data:image/png;base64,{{ plots.traveltime_by_timeofday }}" alt="Travel Time by Time of Day">
+                </div>
+                {% endif %}
+
+                {% if plots.maxspeed_distribution %}
+                <div class="plot-container">
+                    <div class="plot-title">Maximum Speed Distribution</div>
+                    <img src="data:image/png;base64,{{ plots.maxspeed_distribution }}" alt="Max Speed Distribution">
+                </div>
+                {% endif %}
+
+                {% if plots.traveltime_vs_distance %}
+                <div class="plot-container">
+                    <div class="plot-title">Travel Time vs Distance</div>
+                    <img src="data:image/png;base64,{{ plots.traveltime_vs_distance }}" alt="Travel Time vs Distance">
+                </div>
+                {% endif %}
+
+                {% if plots.avgspeed_by_timeofday %}
+                <div class="plot-container">
+                    <div class="plot-title">Average Speed by Time of Day</div>
+                    <img src="data:image/png;base64,{{ plots.avgspeed_by_timeofday }}" alt="Average Speed by Time of Day">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('download') }}" class="btn btn-primary">Download Results (CSV)</a>
+                <a href="{{ url_for('reset') }}" class="btn btn-secondary">Start New Analysis</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>FCD Travel Time Analysis Tool</p>
+        </footer>
+    </div>
+</body>
+</html>

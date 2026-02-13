@@ -1,0 +1,201 @@
+# FCD Travel Time Analysis - Web Application
+
+A web-based tool for analyzing Floating Car Data (FCD) to calculate travel times and traffic statistics between measurement lines.
+
+## Overview
+
+This web application converts the functionality of the `travel_time_from_fcd_Version2.ipynb` Jupyter Notebook into an easy-to-use web interface. Users can upload FCD data, draw measurement lines on an interactive map, and visualize comprehensive travel time analysis results.
+
+## Features
+
+- **CSV Upload**: Upload FCD data files with semicolon-separated values
+- **Configurable Parameters**: Adjust analysis parameters (stop thresholds, distance cuts, etc.)
+- **Interactive Map**: Draw measurement lines using Leaflet.js with Draw plugin
+- **Automatic Analysis**: Calculate segment crossings, travel times, speeds, stops, and acceleration
+- **Comprehensive Visualizations**: View multiple plots including:
+  - Distance and travel time distributions
+  - Travel time by time of day
+  - Speed statistics
+  - Scatter plots
+- **Export Results**: Download analysis results as CSV
+- **Filtering**: Automatic filtering for weekdays (Tue-Thu) and holidays
+
+## Installation
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package manager)
+
+### Setup
+
+1. Navigate to the application directory:
+   ```bash
+   cd fcd_web_app
+   ```
+
+2. Install required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Usage
+
+### Starting the Application
+
+1. Start the Flask development server:
+   ```bash
+   python app.py
+   ```
+
+2. Open your web browser and navigate to:
+   ```
+   http://localhost:5000
+   ```
+
+### Workflow
+
+The application follows a 3-step workflow:
+
+#### Step 1: Upload & Configure
+- Upload your FCD CSV file (semicolon-separated)
+- Configure analysis parameters:
+  - **Long Stop Threshold**: Duration (seconds) to filter out trajectories with very long stops (default: 600)
+  - **Stop Speed Threshold**: Speed (km/h) below which movement is considered a stop (default: 0.1)
+  - **Minimum Stop Points**: Consecutive points required to validate a stop (default: 2)
+  - **Maximum Distance**: Filter segments with distance greater than this (meters, default: 700)
+
+#### Step 2: Draw Measurement Lines
+- An interactive map displays centered on your data
+- Use the drawing tools to create exactly 2 polylines:
+  - **Line A**: Start measurement line
+  - **Line B**: End measurement line
+- The application automatically checks line order (swaps if needed)
+- Click "Start Analysis" when ready
+
+#### Step 3: View Results
+- View comprehensive statistics:
+  - Travel time statistics (mean, median, std, min, max)
+  - Distance statistics
+  - Speed statistics
+- Explore visualizations:
+  - Distribution plots for distance, travel time, and speed
+  - Boxplots by time of day
+  - Scatter plots
+- Download results as CSV
+
+## CSV File Format
+
+The input CSV file must be semicolon-separated (`;`) and contain the following columns:
+
+- `traj_id`: Trajectory identifier
+- `traj_seq`: Sequence number within trajectory
+- `old_lon`, `old_lat`: Start point coordinates
+- `new_lon`, `new_lat`: End point coordinates
+- `old_point_wkt`, `new_point_wkt`: WKT POINT representations
+- `x1`, `x2`: Location identifiers
+- `t1`, `t2`: Unix timestamps (start/end)
+- `v1`, `v2`: Velocities (km/h)
+- `time_diff`: Time difference (seconds)
+
+## Analysis Details
+
+### Data Processing
+
+1. **Filtering**: Removes trajectories with very long stops at one location
+2. **Stop Detection**: Identifies stops based on speed threshold and consecutive points
+3. **Trajectory Parsing**: Extracts and validates WKT point coordinates
+4. **Segment Calculation**: Finds intersections with measurement lines and calculates:
+   - Travel time between lines
+   - Distance traveled
+   - Average and maximum speeds
+   - Stop statistics (count, duration, delay)
+   - Acceleration statistics
+
+### Filtering Rules
+
+Results are automatically filtered for:
+- **Weekdays**: Tuesday, Wednesday, Thursday only
+- **Holidays**: German holidays for 2021 (configurable in code)
+- **School breaks**: German school breaks for 2021 (configurable in code)
+- **Distance**: Segments exceeding the configured maximum distance
+
+### Time Periods
+
+Analysis categorizes data into time periods:
+- Morning Peak (06:00-09:00)
+- Midday (09:00-15:00)
+- Afternoon Peak (15:00-19:00)
+- Evening (19:00-22:00)
+- Night (22:00-06:00)
+
+## Project Structure
+
+```
+fcd_web_app/
+├── app.py                  # Flask application with routes
+├── analysis.py             # Analysis logic extracted from notebook
+├── templates/
+│   ├── index.html          # Upload page
+│   ├── map.html            # Interactive map
+│   └── results.html        # Results dashboard
+├── static/
+│   └── css/
+│       └── style.css       # Styling
+├── requirements.txt        # Python dependencies
+└── README.md              # This file
+```
+
+## Technology Stack
+
+- **Backend**: Flask (Python web framework)
+- **Data Processing**: pandas, numpy
+- **Geospatial**: shapely, pyproj
+- **Visualization**: matplotlib, seaborn
+- **Frontend**: HTML, CSS, JavaScript
+- **Mapping**: Leaflet.js, Leaflet.Draw
+
+## Production Deployment
+
+For production use, consider:
+
+1. **Use a production WSGI server** (e.g., Gunicorn):
+   ```bash
+   pip install gunicorn
+   gunicorn -w 4 -b 0.0.0.0:5000 app:app
+   ```
+
+2. **Set up a reverse proxy** (e.g., Nginx) for better performance and security
+
+3. **Configure session storage** with a persistent backend (e.g., Redis)
+
+4. **Set up proper file storage** for uploads (e.g., S3, persistent volume)
+
+5. **Enable HTTPS** for secure communication
+
+6. **Adjust Flask configuration**:
+   ```python
+   app.config['SECRET_KEY'] = 'your-secure-secret-key'
+   app.debug = False
+   ```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Import errors**: Ensure all dependencies are installed: `pip install -r requirements.txt`
+2. **Port already in use**: Change the port in `app.py` or stop the conflicting process
+3. **Large file uploads fail**: Adjust `MAX_CONTENT_LENGTH` in `app.py`
+4. **Memory issues**: For very large datasets, consider processing in chunks or increasing available memory
+
+## Original Notebook
+
+The original Jupyter Notebook (`travel_time_from_fcd_Version2.ipynb`) is preserved in the repository root for reference.
+
+## License
+
+This tool is provided as-is for research and analysis purposes.
+
+## Support
+
+For issues or questions, please refer to the original notebook documentation or contact the repository maintainer.
